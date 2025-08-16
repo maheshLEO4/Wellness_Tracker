@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
 import numpy as np
 
@@ -6,6 +6,10 @@ pipeline = joblib.load("model/model.pkl")
 feature_names = ['age', 'sleep_hours', 'phone_use_hours', 'water_liters', 'gender_Male', 'gender_Other']
 
 app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -17,7 +21,7 @@ def predict():
         return jsonify({"error": f"Expected {len(feature_names)} features, got {len(features)}"}), 400
     X = np.array(features).reshape(1, -1)
     prediction = pipeline.predict(X)[0]
-    prediction_percentage = int(round(prediction))  # whole number
+    prediction_percentage = int(round(prediction))
     return jsonify({"wellness_index_percentage": prediction_percentage})
 
 if __name__ == "__main__":

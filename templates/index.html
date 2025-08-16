@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a237e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(26, 35, 126, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 50px 60px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 50px;
+            background: linear-gradient(45deg, #ffffff, #64b5f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #b0bec5;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 20px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #1976d2;
+            background: rgba(25, 118, 210, 0.1);
+            transform: scale(1.02);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1a237e;
+            color: #ffffff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+            display: block;
+            padding: 20px;
+            background: linear-gradient(45deg, #1976d2, #0d47a1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(45deg, #1565c0, #0a0a0a);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(25, 118, 210, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        #result {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            border-left: 4px solid #1976d2;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        #result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #1976d2;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 40px 30px;
+                margin: 10px;
+                max-width: 500px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                margin-bottom: 30px;
+            }
+
+            input, select {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+
+            .submit-btn {
+                padding: 16px;
+                font-size: 1rem;
+                max-width: none;
+            }
+            
+            #result {
+                padding: 20px;
+                font-size: 1.3rem;
+                min-height: 60px;
+                margin-top: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 25px 20px;
+            }
+            
+            input, select {
+                padding: 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wellness Predictor</h1>
+        <form id="predictForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <div class="input-group">
+                        <input type="number" id="age" required placeholder="Enter your age">
+                        <span class="input-icon">👤</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sleep">Sleep Hours</label>
+                    <div class="input-group">
+                        <input type="number" id="sleep" required placeholder="Hours per night">
+                        <span class="input-icon">😴</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Use (hours)</label>
+                    <div class="input-group">
+                        <input type="number" id="phone" required placeholder="Hours per day">
+                        <span class="input-icon">📱</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="water">Water Intake (liters)</label>
+                    <div class="input-group">
+                        <input type="number" id="water" step="0.1" required placeholder="Liters per day">
+                        <span class="input-icon">💧</span>
+                    </div>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="gender">Gender</label>
+                    <select id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="1,0">Male</option>
+                        <option value="0,0">Female</option>
+                        <option value="0,1">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Predict Wellness</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("predictForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = '<div class="loading"></div>Analyzing your wellness...';
+            resultDiv.classList.add("show");
+            
+            try {
+                const genderValues = document.getElementById("gender").value.split(',').map(Number);
+                const features = [
+                    Number(document.getElementById("age").value),
+                    Number(document.getElementById("sleep").value),
+                    Number(document.getElementById("phone").value),
+                    Number(document.getElementById("water").value),
+                    genderValues[0], 
+                    genderValues[1]
+                ];
+
+                const res = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ features })
+                });
+                
+                const data = await res.json();
+                
+                setTimeout(() => {
+                    if (data.wellness_index_percentage !== undefined) {
+                        const percentage = data.wellness_index_percentage;
+                        let emoji = "😊";
+                        let color = "#4caf50";
+                        
+                        if (percentage < 50) {
+                            emoji = "😟";
+                            color = "#f44336";
+                        } else if (percentage < 70) {
+                            emoji = "😐";
+                            color = "#ff9800";
+                        }
+                        
+                        resultDiv.innerHTML = `
+                            <div style="color: ${color};">
+                                ${emoji} Wellness Index: ${percentage}%
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div style="color: #f44336;">
+                                ❌ Error: ${data.error || 'Something went wrong'}
+                            </div>
+                        `;
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                setTimeout(() => {
+                    resultDiv.innerHTML = `
+                        <div style="color: #f44336;">
+                            ❌ Error: Unable to connect to server
+                        </div>
+                    `;
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
